@@ -1,33 +1,34 @@
 #!/bin/bash
-# 
-# Simple script to build .mkv from given ISO.
-{
+#
+# This script will find the longest title on an ISO and make a single
+# .mkv out of it.
+#
+#
   echo ">> ISO found"
   echo ">> Setting the title..."
-  
-  filepath="$1"  
+  filepath=$1
+  savedir=$2
+  echo $filepath
+  echo $savedir
 
-  title=$(makemkvcon -r info iso:$filepath)
-  title=`echo "$title" | grep "CINFO:2,0"`
-  title=${title:11}
-  len=${#title}-1
-  title=${title:0:$len}
-  
+  title=${filepath##*/}
+  title=${title%.ISO}
+  echo $title
   if [ -z "$title" ]; then
-	echo ">> No title found"
-	echo ">> Exiting"
-	exit;
+        echo ">> No title found"
+        echo ">> Exiting"
+        exit;
   else
-	echo ">> Title set to: $title"
-	echo ">> Starting .ISO to .MKV conversion..."	
+        echo ">> Title set to: $title"
+        echo ">> Starting .ISO to .MKV conversion..."
 
-   makemkvcon64 --minlength=4800 --cache=512 -r mkv --progress=-same iso:$filepath all $(dirname "$filepath") 
-#  makemkvcon64 --minlength=4800 --cache=512 -r mkv --progress=-same iso:$filepath all $(dirname "$filepath") | grep '^PRGT:'
-#	t = $(echo $LINE | awk '{ print $1 }' | cut -d, -f1)
-#	echo $t
-  
-  mv -v $(dirname "$filepath")"/"*.mkv $(dirname "$filepath")"/mkv/"$title.mkv
-    
-  echo ">> $title.mkv created."
+   longestTrack=$(makemkvcon -r info iso:$filepath | grep cell | awk '{ print $$
+   echo "Using Track size: $longestTrack"
+
+   sudo mkdir ${savedir}/${title}
+   sudo makemkvcon --minlength="$longestTrack" --cache=512 -r mkv --progress=-s$
+
+   sudo mv -v ${savedir}/${title}/*.mkv ${savedir}${title}.MKV
+   sudo rmdir ${savedir}/${title}
+   echo ">> $title.MKV created."
 fi
-} 
