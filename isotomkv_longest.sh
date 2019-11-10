@@ -31,30 +31,28 @@
   title=${title%.ISO}
   echo $title
   if [ -z "$title" ]; then
-        echo ">> No title found"
-        echo ">> Exiting"
-        exit;
+	echo ">> No title found"
+	echo ">> Exiting"
+	exit;
   else
-        echo ">> Title set to: $title"
-        echo ">> Starting .ISO to .MKV conversion..."
+	echo ">> Title set to: $title"
+	echo ">> Starting .ISO to .MKV conversion..."
         echo "$savedir $title"
 
-   longestTrack=$(makemkvcon -r info iso:$filepath | grep cell | awk '{ print $7 }' | tr -d '\)\",\"Title' | sort -nr | head -n1 | awk -F: '{p$
+   longestTrack=$(makemkvcon -r info iso:$filepath | grep cell | awk '{ print $7 }' | tr -d '\)\",\"Title' | sort -nr | head -n1 | awk -F: '{print ($1 * 3600) + ($2 * 60) + $3}')
    echo "Using Track size: $longestTrack"
 
- sudo mkdir $title
- sudo makemkvcon --minlength="$longestTrack" --cache=512 -r mkv --progress=-same iso:$filepath all ${savedir}/$title
+   sudo mkdir $title
+
+   sudo makemkvcon --minlength="$longestTrack" --cache=512 -r mkv --progress=-same iso:$filepath all ${savedir}/$title
 #  makemkvcon64 --minlength=4800 --cache=512 -r mkv --progress=-same iso:$filepath all $(dirname "$filepath") | grep '^PRGT:'
-#       t = $(echo $LINE | awk '{ print $1 }' | cut -d, -f1)
-#       echo $t
+#	t = $(echo $LINE | awk '{ print $1 }' | cut -d, -f1)
+#	echo $t
 
 #   test=${savedir}/${title}
 #   echo $test
 # put in a loop to spool thru all .mkv and title them _1, _2
 #  sudo mv -v ${savedir}working/*.mkv ${savedir}${title}.MKV
-#  sudo rm ${savedir}working/*.mkv
-  echo ">> $title.MKV created."
-
 #  sudo rm ${savedir}working/*.mkv
   echo ">> $title.MKV created."
 fi

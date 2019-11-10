@@ -35,7 +35,7 @@ for file in $isodir*.ISO; do
        echo "Found" "$(basename "${filename}")".MKV
     else
        echo "Attempting to transcode " "$filename" " to MKV format"
-       sudo isotomkv.sh "$filename".ISO $mkvdir | grep "Progress:" 
+       sudo split_isotomkv.sh "$filename".ISO $mkvdir | grep "Progress:" 
        echo "Transcoded: " "$filename"
     fi
 done
